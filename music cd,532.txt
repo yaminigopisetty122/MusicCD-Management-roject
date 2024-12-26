@@ -1,0 +1,109 @@
+#include <stdio.h>
+#include <string.h>
+
+// Structure to represent a music CD
+struct CD {
+    int cdID;
+    char title[50];
+    char artist[50];
+    int isAvailable;  // Number of available copies
+    int totalCount;   // Total number of copies of the CD
+};
+
+// Function to add a CD to the collection
+void addCD(struct CD *collection, int *count) {
+    printf("Enter CD ID: ");
+    scanf("%d", &collection[*count].cdID);
+    getchar();  // To consume the newline character left by scanf
+
+    printf("Enter CD title: ");
+    fgets(collection[*count].title, 50, stdin);
+    collection[*count].title[strcspn(collection[*count].title, "\n")] = '\0';  // Remove newline character
+
+    printf("Enter artist name: ");
+    fgets(collection[*count].artist, 50, stdin);
+    collection[*count].artist[strcspn(collection[*count].artist, "\n")] = '\0';  // Remove newline character
+
+    printf("Enter the number of copies: ");
+    scanf("%d", &collection[*count].totalCount);
+
+    collection[*count].isAvailable = collection[*count].totalCount;  // Initially all copies are available
+    (*count)++;
+    printf("CD added successfully!\n");
+}
+
+// Function to display all CDs in the collection
+void displayCDs(struct CD *collection, int count) {
+    if (count == 0) {
+        printf("No CDs available in the collection.\n");
+    } else {
+        printf("\nList of CDs:\n");
+        printf("ID\tTitle\t\tArtist\t\tAvailable\tTotal Copies\n");
+        printf("---------------------------------------------------------------------\n");
+        for (int i = 0; i < count; i++) {
+            printf("%d\t%s\t\t%s\t\t%d\t\t%d\n", collection[i].cdID, collection[i].title, collection[i].artist, 
+                   collection[i].isAvailable, collection[i].totalCount);
+        }
+    }
+}
+
+// Function to issue a CD by its ID
+void checkOutCD(struct CD *collection, int count) {
+    int id;
+    printf("Enter CD ID to issue: ");
+    scanf("%d", &id);
+
+    int found = 0;
+    for (int i = 0; i < count; i++) {
+        if (collection[i].cdID == id) {
+            if (collection[i].isAvailable > 0) {
+                collection[i].isAvailable--;  // Decrease available copies
+                printf("Successfully issued the CD: %s\n", collection[i].title);
+            } else {
+                printf("Sorry, no copies are available for issuance.\n");
+            }
+            found = 1;
+            break;
+        }
+    }
+
+    if (!found) {
+        printf("CD not found.\n");
+    }
+}
+
+// Main function
+int main() {
+    struct CD collection[100];  // Array to store CDs
+    int count = 0;  // Keep track of the number of CDs in the collection
+    int choice;
+
+    while (1) {
+        printf("\nMusic CD Management System\n");
+        printf("1. Add CD\n");
+        printf("2. Display All CDs\n");
+        printf("3. Issue CD\n");
+        printf("4. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                addCD(collection, &count);
+                break;
+            case 2:
+                displayCDs(collection, count);
+                break;
+            case 3:
+                checkOutCD(collection, count);
+                break;
+            case 4:
+                printf("Exiting system...\n");
+                return 0;
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    }
+
+    return 0;
+}
